@@ -1,0 +1,39 @@
+h1,
+h2,
+h3 {
+  margin: 4px;
+}
+
+h2 {
+  font-size: 26px;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+.top-navigation {
+  background-color: bisque;
+  padding: 20px 10px 20px 10px;
+}
+
+.container {
+  display: flex;
+  margin-top: 6vh;
+  margin-right: 10vw;
+  margin-bottom: 20vh;
+  margin-left: 10vw;
+  border: 2px;
+}
+
+.box {
+  flex: auto;
+  margin: 4vh 2vw 3vw 2vw;
+  border: 2px;
+  padding: 24px 16px 24px 16px;
+  height: fit-content;
+}
+
+.box {
+  box-shadow: 2px 3px 2px grey;
+}
