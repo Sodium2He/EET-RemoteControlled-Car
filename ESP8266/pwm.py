@@ -7,7 +7,7 @@ def get_duty(direction):
    duty=(10/18)*direction
    return int(duty)
 
-def control(press_houtui,press_qianjin,press_youzhuan,press_youzhuan,shache)
+def control(press_houtui,press_qianjin,press_zuozhuan,press_youzhuan,shache):
   if press_zuozhuan==1:
      servo.duty(get_duty(45))
      sleep(1)
