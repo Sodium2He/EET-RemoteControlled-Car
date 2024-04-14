@@ -1,8 +1,42 @@
-from machine import Pin, PWM
+from machine import PWM,Pin
+from time import sleep
+servo=PWM(Pin(12),freq=50,duty=0)#转向控制
+pwm1=PWM(Pin(4),freq=50,duty=0)#两路pwm波控制前进方式
+pwm2=PWM(Pin(5),freq=50,duty=0)
+def get_duty(direction):
+   duty=(10/18)*direction
+   return int(duty)
 
-''' 仅作演示，待后续实现
-def set_pwm(pin_number, duty_cycle):
-    pwm = PWM(Pin(pin_number))
-    pwm.freq(1000)  # 设置PWM频率
-    pwm.duty(duty_cycle)  # 设置PWM占空比
-'''
+def control(press_houtui,press_qianjin,press_youzhuan,press_youzhuan,shache)
+  if press_zuozhuan==1:
+     servo.duty(get_duty(45))
+     sleep(1)
+  elif press_youzhuan==1:  
+     servo.duty(get_duty(135))
+     sleep(1)  
+  
+  if press_qianjin==1:
+     pwm1.duty(get_duty(0))
+     pwm2.duty(0)
+     sleep(1)
+  elif press_qianjin==2:
+     pwm1.duty(get_duty(60))
+     pwm2.duty(0)
+     sleep(1) 
+  elif press_qianjin==3:
+     pwm1.duty(get_duty(120))
+     pwm2.duty(0)
+     sleep(1) 
+  elif press_qianjin==4:
+     pwm1.duty(get_duty(180))
+     pwm2.duty(0)
+     sleep(1) 
+  elif press_houtui==1:
+     pwm2.duty(get_duty(90))
+     pwm1.duty(0)
+     sleep(1) 
+  elif shache==1:
+     pwm1.duty(1023)
+     pwm2.duty(1023)
+     sleep(1) 
+   
