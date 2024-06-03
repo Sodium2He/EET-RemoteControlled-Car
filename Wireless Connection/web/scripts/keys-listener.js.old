@@ -1,0 +1,49 @@
+const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+
+socket.on('connect', function () {
+  console.log('WebSocket connected');
+});
+
+let keyState = {
+  'w': 0,
+  'a': 0,
+  's': 0,
+  'd': 0,
+  ' ': 0,
+};
+
+function handleKeyDown(event) {
+  const key = event.key.toLowerCase();
+  if (key in keyState && keyState[key] === 0) {
+    keyState[key] = 1;
+    serverSocket.send(JSON.stringify({ key: key, status: 1 }));
+  }
+}
+
+function handleKeyUp(event) {
+  const key = event.key.toLowerCase();
+  if (key in keyState && keyState[key] === 1) {
+    keyState[key] = 0;
+    serverSocket.send(JSON.stringify({ key: key, status: 0 }));
+  }
+}
+
+document.addEventListener('keydown', handleKeyDown);
+document.addEventListener('keyup', handleKeyUp);
+
+function sendKeyState(key, status) {
+  if (key in keyState && keyState[key] !== status) {
+    keyState[key] = status;
+    serverSocket.send(JSON.stringify({ key: key, status: status }));
+  }
+}
+
+function resetKeyStates() {
+  for (let key in keyState) {
+    if (keyState[key] === 1) {
+      keyState[key] = 0;
+      serverSocket.send(JSON.stringify({ key: key, status: 0 }));
+    }
+  }
+}

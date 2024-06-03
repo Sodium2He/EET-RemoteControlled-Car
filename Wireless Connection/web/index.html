@@ -1,33 +1,92 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8">
-    <meta name="author" content="Sodium2He" />
-    <meta
-      name="description"
-      content="A simple management website for my remote controlled car." />  
-    <link rel="stylesheet" href="styles/main-styles.css" />
-    <script src="scripts/keys-listener.js" defer></script>
-    <title>遥控小车控制页面</title>
-    <link rel="icon" href="images/favicon.svg" type="image/x-icon" />
-  </head>
-  <body>
-    <!-- 页面顶端修饰条 -->
-    <header class="top-navigation">
-      <h2 style="color: brown;" align="center">遥控小车简易用户控制界面 v1.1</h2>
-    </header>
-    <!-- 三个box对应三组控制参数，并排放置 -->
-    <div class="container">
-      <span class="box">
-        <h3 align="center">前进/后退控制</h3>
-      </span>
-      <span class="box">
-        <h3 align="center">左转/右转控制</h3>
-      </span>
-      <span class="box">
-        <h3 align="center">附加控制选项</h3>
-      </span>
-    </div>
-  </body>
-</html>
 
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Sodium2He" />
+  <meta name="description" content="A simple management website for my remote controlled car." />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/main-styles.css') }}" />
+  <title>遥控小车控制页面</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}" type="image/x-icon" />
+</head>
+
+<body>
+  <!-- 页面顶端修饰条 -->
+  <header class="top-navigation">
+    <h2 style="color: brown;" align="center">遥控小车简易用户控制界面 v1.1</h2>
+  </header>
+  <!-- 三个box对应三组控制参数，并排放置 -->
+  <div class="container">
+    <div class="box">
+      <h3>前进/后退控制</h3>
+      <div>
+        <button onmousedown="sendKeyState('w', 1)">前进 (W)</button>
+        <button onmousedown="sendKeyState('s', 1)">后退 (S)</button>
+      </div>
+    </div>
+    <!--
+      <div class="box">
+        <h3>左转/右转控制</h3>
+      </div>
+      -->
+    <div class="box">
+      <h3>附加控制选项</h3>
+      <div>
+        <button onclick="resetKeyStates()">清空状态/停止</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.min.js"></script>
+  <script>
+    const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    socket.on('connect', function () {
+      console.log('WebSocket connected');
+    });
+
+    let keyState = {
+      'w': 0,
+      'a': 0,
+      's': 0,
+      'd': 0,
+      ' ': 0,
+    };
+
+    function handleKeyDown(event) {
+      const key = event.key.toLowerCase();
+      if (key in keyState && keyState[key] === 0) {
+        keyState[key] = 1;
+        socket.send(JSON.stringify({ key: key, status: 1 }));
+      }
+    }
+
+    function handleKeyUp(event) {
+      const key = event.key.toLowerCase();
+      if (key in keyState && keyState[key] === 1) {
+        keyState[key] = 0;
+        socket.send(JSON.stringify({ key: key, status: 0 }));
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+
+    function sendKeyState(key, status) {
+      if (key in keyState && keyState[key] !== status) {
+        keyState[key] = status;
+        socket.send(JSON.stringify({ key: key, status: status }));
+      }
+    }
+
+    function resetKeyStates() {
+      for (let key in keyState) {
+        if (keyState[key] === 1) {
+          keyState[key] = 0;
+          socket.send(JSON.stringify({ key: key, status: 0 }));
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
