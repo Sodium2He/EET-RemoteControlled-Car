@@ -1,20 +1,13 @@
 from machine import PWM,Pin
 from time import sleep
-servo=PWM(Pin(12),freq=50,duty=0)#转向控制
-pwm1=PWM(Pin(4),freq=50,duty=0)#两路pwm波控制前进方式
+servo=PWM(Pin(12),freq=50,duty=0)#�?向控�?
+pwm1=PWM(Pin(4),freq=50,duty=0)#两路pwm波控制前进方�?
 pwm2=PWM(Pin(5),freq=50,duty=0)
 def get_duty(direction):
    duty=(10/18)*direction
    return int(duty)
 
-def control(press_houtui,press_qianjin,press_zuozhuan,press_youzhuan,shache):
-  if press_zuozhuan==1:
-     servo.duty(get_duty(45))
-     sleep(1)
-  elif press_youzhuan==1:  
-     servo.duty(get_duty(135))
-     sleep(1)  
-  
+def control(press_houtui,press_qianjin,shache):
   if press_qianjin==1:
      pwm1.duty(get_duty(0))
      pwm2.duty(0)
