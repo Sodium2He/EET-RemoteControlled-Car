@@ -4,8 +4,8 @@ import socket
 
 # UDP settings
 # Change IP & PORT to your ESP8266's IP and port
-espIP = '192.168.1.10'
-espPORT = 16384
+espIP = '192.168.137.238'
+espPORT = 65100
 espAddr = (espIP, espPORT)
 espSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 espSocket.setblocking(0)
@@ -23,7 +23,7 @@ def index():
 @webSocketio.on('message')
 def handleMessage(message):
     print(f"Received message: {message}")
-    sendUDPpackage(message.encode('utf-8'))  # Encode message to bytes
+    sendUDPpackage(message.encode('ascii'))  # Encode message to bytes
 
 # UDP send function
 def sendUDPpackage(data):
