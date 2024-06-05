@@ -1,24 +1,25 @@
-# Directly download this file into your chip, main.py should run automatically as soon as the power is on.
 import socket
 import network
-#import pwm
 import ujson
 
-from machine import PWM,Pin
+from machine import PWM, Pin
 from time import sleep
-servo=PWM(Pin(12),freq=50,duty=0)
-pwm1=PWM(Pin(4),freq=50,duty=0)
-pwm2=PWM(Pin(5),freq=50,duty=0)
+
+# Initialize PWM
+servo = PWM(Pin(12), freq=50, duty=0)
+pwm1 = PWM(Pin(4), freq=50, duty=0)
+pwm2 = PWM(Pin(5), freq=50, duty=0)
+
 def get_duty(direction):
-   duty=(10/18)*direction
-   return int(duty)
+    duty = (10 / 18) * direction
+    return int(duty)
 
 # Wi-Fi settings, change them to yours!
 wlanSSID = '8b2bnsd9g'
-wlanPWD  = 'hje9cb3mi'
+wlanPWD = 'hje9cb3mi'
 
 # UDP settings, change PORT to yours!
-espPORT = 65100
+espPORT = 65113
 espSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Wi-Fi connection
@@ -29,33 +30,45 @@ while not wlan.isconnected():
     pass
 print('ESP8266> Network config:', wlan.ifconfig())
 
-# setup UDP socket
+# Setup UDP socket
 espSocket.bind(('0.0.0.0', espPORT))
-print('ESP8266> Listening on port %d' %espPORT)
- 
-# receive data through UDP
-while True:
-    data, sockAddr = espSocket.recvfrom(1024)
-    print('ESP8266> from', sockAddr, 'Received:', data)
-    json_data = ujson.loads(data)
-    # sock.sendto()
-    if data:
-      #message = data.decode()
-      key = json_data['key']
-      status = json_data['status']
-      if status == 1:
-        if key == 's':
-          pwm2.duty(get_duty(90))
-          pwm1.duty(0)
-          sleep(1)
-        elif key == 'w':
-          pwm1.duty(get_duty(60))
-          pwm2.duty(0)
-          sleep(1)
-        elif status == 0:
-          pwm1.duty(1023)
-          pwm2.duty(1023)
-          sleep(1) 
-    break        
+print('ESP8266> Listening on port %d' % espPORT)
 
+flag = 1
+# Ensure resources are released properly
+try:
+    # Receive data through UDP
+    while flag:
+        data, sockAddr = espSocket.recvfrom(1024)
+        temp_data = data.decode('ascii')
+        print('ESP8266> from', sockAddr, 'Received:', temp_data)
+        json_data = ujson.loads(temp_data)
+        if data:
+            key = json_data['key']
+            status = json_data['status']
+            print(key, status)
+            if key == 'x' and status == 1:
+                print('exit')
+                flag = 0
+                break
+            if status == 1:
+                if key == 's':
+                    print('on s')
+                    pwm2.duty(1024)#get_duty(90)
+                    pwm1.duty(0)
+                    sleep(0.05)
+                elif key == 'w':
+                    print('on w')
+                    pwm1.duty(1024)#get_duty(60)
+                    pwm2.duty(0)
+                    sleep(0.05)
+            elif status == 0:
+                print('on [_]')
+                pwm1.duty(1023)
+                pwm2.duty(1023)
+                sleep(0.05)
+finally:
+    # Release resources
+    espSocket.close()
+    print('ESP8266> Socket closed')
 
