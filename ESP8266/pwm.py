@@ -1,12 +1,8 @@
 from machine import PWM,Pin
 from time import sleep
-
-# controls turning
-servo=PWM(Pin(12),freq=50,duty=0)
-# controls speed + linear motion
-pwm1=PWM(Pin(4),freq=50,duty=0)
+servo=PWM(Pin(12),freq=50,duty=0)#�?向控�?
+pwm1=PWM(Pin(4),freq=50,duty=0)#两路pwm波控制前进方�?
 pwm2=PWM(Pin(5),freq=50,duty=0)
-
 def get_duty(direction):
    duty=(10/18)*direction
    return int(duty)
